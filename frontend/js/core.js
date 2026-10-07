@@ -51,37 +51,43 @@ async function api(path, { method = 'GET', body, query } = {}) {
     if (qs) url += '?' + qs;
   }
 
-  const headers = {};
-  if (Session.token) headers.Authorization = 'Bearer ' + Session.token;
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  let status, data;
 
-  let res;
-  try {
-    res = await fetch(url, {
-      method,
-      headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
-    });
-  } catch {
-    throw new ApiError("Can't reach the server. Check that the API gateway is running on port 8084.", 0);
+  if (window.DEMO) {
+    // Demo mode: answered in the browser by js/demo.js, no backend needed.
+    ({ status, data } = await window.DEMO.handle(method, path, query, body));
+  } else {
+    const headers = {};
+    if (Session.token) headers.Authorization = 'Bearer ' + Session.token;
+    if (body !== undefined) headers['Content-Type'] = 'application/json';
+
+    let res;
+    try {
+      res = await fetch(url, {
+        method,
+        headers,
+        body: body !== undefined ? JSON.stringify(body) : undefined,
+      });
+    } catch {
+      throw new ApiError("Can't reach the server. Check that the API gateway is running on port 8084.", 0);
+    }
+    status = res.status;
+    const text = await res.text();
+    if (text) {
+      try { data = JSON.parse(text); } catch { data = text; }
+    }
   }
 
-  const text = await res.text();
-  let data = null;
-  if (text) {
-    try { data = JSON.parse(text); } catch { data = text; }
-  }
-
-  if (!res.ok) {
+  if (status < 200 || status >= 300) {
     // Expired or invalid token: send the user back to sign in.
-    if ((res.status === 401 || res.status === 403) && Session.token && !path.startsWith('/auth')) {
+    if ((status === 401 || status === 403) && Session.token && !path.startsWith('/auth')) {
       Session.end();
       location.replace('login.html?reason=expired');
     }
-    let message = `Request failed (error ${res.status}).`;
+    let message = `Request failed (error ${status}).`;
     if (data && typeof data === 'object' && data.message) message = data.message;
     else if (typeof data === 'string' && data.length < 200) message = data;
-    throw new ApiError(message, res.status);
+    throw new ApiError(message, status);
   }
   return data;
 }
@@ -352,6 +358,20 @@ function renderShell() {
     <a href="index.html">Mariam Bank</a>`;
 
   document.body.prepend(sidebar, topbar);
+
+  if (window.DEMO) {
+    const banner = document.createElement('div');
+    banner.className = 'demo-banner';
+    banner.innerHTML = `<p><strong>Demo mode.</strong> You're using sample data that runs in your browser. Changes last until you close this tab.</p>
+      <div>
+        <button type="button" class="btn btn-ghost btn-sm" id="demoReset">Reset sample data</button>
+        ${window.DEMO.onPages ? '' : '<button type="button" class="btn btn-ghost btn-sm" id="demoExit">Exit demo</button>'}
+      </div>`;
+    document.querySelector('.main').prepend(banner);
+    banner.querySelector('#demoReset').addEventListener('click', () => { window.DEMO.reset(); location.reload(); });
+    const exit = banner.querySelector('#demoExit');
+    if (exit) exit.addEventListener('click', () => { window.DEMO.exit(); Session.end(); location.replace('login.html'); });
+  }
 
   sidebar.querySelector('#signOutBtn').addEventListener('click', signOut);
 

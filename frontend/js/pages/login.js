@@ -20,6 +20,17 @@
     $('password').focus();
   }
 
+  if (window.DEMO) {
+    $('demoLogin').hidden = false;
+    const signInAs = email => {
+      $('email').value = email;
+      $('password').value = 'demo';
+      $('loginForm').requestSubmit();
+    };
+    $('demoStaff').addEventListener('click', () => signInAs(window.DEMO.accounts.staff));
+    $('demoCustomer').addEventListener('click', () => signInAs(window.DEMO.accounts.customer));
+  }
+
   $('loginForm').addEventListener('submit', e => {
     e.preventDefault();
     const form = e.currentTarget;

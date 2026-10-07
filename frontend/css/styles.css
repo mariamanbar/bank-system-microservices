@@ -579,6 +579,31 @@ dialog[open] { animation: dialog-in 0.16s ease-out; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
 }
 
+/* ---------- Demo mode ---------- */
+
+.demo-banner {
+  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px;
+  margin-bottom: 28px;
+  padding: 10px 12px 10px 16px;
+  border-radius: var(--radius);
+  background: var(--ochre-tint);
+  color: #6b4508;
+  font-size: 14px;
+}
+.demo-banner > div { display: flex; gap: 4px; }
+.demo-banner .btn-ghost { color: #6b4508; }
+.demo-banner .btn-ghost:hover { background: rgba(168, 107, 18, 0.12); color: #4f3306; }
+
+.demo-login {
+  display: grid; gap: 10px;
+  padding: 16px;
+  border-radius: var(--radius);
+  background: var(--ochre-tint);
+  color: #6b4508;
+  font-size: 14px;
+}
+.demo-login div { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+
 /* Hide signed-in pages until the shell has applied role-specific content. */
 body[data-page] .main { visibility: hidden; }
 body[data-page].ready .main { visibility: visible; }

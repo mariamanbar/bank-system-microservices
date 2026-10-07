@@ -1,5 +1,7 @@
 # Bank Simulation System (Microservices Architecture)
 
+**[Live demo](https://mariamanbar.github.io/bank-system-microservices/)**: try the staff and customer views in your browser. The demo runs on sample data, so no backend is needed.
+
 ## 📌 Project Overview
 
 Developed during my internship at **Arab Bank**, this project is a distributed banking system built with **Spring Boot** microservices and an **HTML/JavaScript** frontend. It simulates core banking operations including customer registration and login, account management, card services, loan processing, and centralized audit logging.
@@ -62,6 +64,12 @@ frontend/
 ```
 
 The gateway address is set once at the top of `js/core.js` (`API_BASE`).
+
+### Demo mode
+
+`js/demo.js` is a small in-browser stand-in for the backend with sample data, using the same API paths and responses as the real gateway. It turns on automatically on GitHub Pages; locally, open any page with `?demo` (for example `frontend/login.html?demo`, which also works by double-clicking the file). Use `?demo=off` or the **Exit demo** button to go back to the real backend. Changes to the sample data last until the browser tab is closed.
+
+The live demo is published by `.github/workflows/pages.yml` whenever the `frontend` folder changes.
 
 The H2 console for each relational service is available at `http://localhost:<port>/h2-console`.
 
