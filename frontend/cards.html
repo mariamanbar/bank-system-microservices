@@ -1,83 +1,254 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Cards | Mariam Bank</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312302a'/%3E%3Cpath d='M8 23V9.5l8 7.5 8-7.5V23' fill='none' stroke='%238fd0b8' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
-  <link rel="preload" href="fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css">
-  <script src="js/demo.js" defer></script>
-  <script src="js/core.js" defer></script>
-  <script src="js/table.js" defer></script>
-  <script src="js/pages/cards.js" defer></script>
-</head>
-<body data-page="cards">
-  <main class="main" id="main">
-    <div class="page-head">
-      <div>
-        <h1 data-mine="My cards">Cards</h1>
-        <p data-staff-only>New card requests arrive as pending. Change the status to activate or decline them.</p>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mariam Bank - Card Services</title>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="assets/css/icons/icomoon/styles.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link href="assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/colors.css" rel="stylesheet" type="text/css" />
+
+    <script
+      type="text/javascript"
+      src="assets/js/core/libraries/jquery.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/js/core/libraries/bootstrap.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/js/plugins/loaders/blockui.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/js/plugins/tables/datatables/datatables.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/js/plugins/notifications/pnotify.min.js"
+    ></script>
+    <script type="text/javascript" src="assets/js/core/app.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/demo.js"></script>
+    <script type="text/javascript" src="js/session.js"></script>
+  </head>
+
+  <body>
+    <div class="navbar navbar-inverse">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="index.html"
+          ><img src="assets/images/logo_light.png" alt=""
+        /></a>
+        <ul class="nav navbar-nav visible-xs-block">
+          <li>
+            <a data-toggle="collapse" data-target="#navbar-mobile"
+              ><i class="icon-tree5"></i
+            ></a>
+          </li>
+          <li>
+            <a class="sidebar-mobile-main-toggle"
+              ><i class="icon-paragraph-justify3"></i
+            ></a>
+          </li>
+        </ul>
       </div>
-      <div class="page-actions">
-        <button type="button" class="btn btn-primary" id="issueCardBtn"><span data-icon="plus"></span><span data-staff-only>Issue card</span><span data-customer-only>Request a card</span></button>
+      <div class="navbar-collapse collapse" id="navbar-mobile">
+        <ul class="nav navbar-nav">
+          <li>
+            <a class="sidebar-control sidebar-main-toggle hidden-xs"
+              ><i class="icon-paragraph-justify3"></i
+            ></a>
+          </li>
+        </ul>
+        <p class="navbar-text">
+          <span class="label bg-success-400">SYSTEM ONLINE</span>
+        </p>
       </div>
     </div>
 
-    <section class="panel">
-      <div class="toolbar">
-        <label class="search">
-          <span class="visually-hidden">Search cards</span>
-          <span data-icon="search"></span>
-          <input class="input" type="search" id="cardSearch" placeholder="Search by card number or ID">
-        </label>
-        <label>
-          <span class="visually-hidden">Status</span>
-          <select class="select" id="statusFilter">
-            <option value="">All statuses</option>
-            <option value="ACTIVE">Active</option>
-            <option value="PENDING">Pending</option>
-            <option value="DECLINED">Declined</option>
-          </select>
-        </label>
-        <span class="count" id="cardCount"></span>
-      </div>
-      <div class="table-wrap"><table class="ledger" id="cardsTable"><tbody></tbody></table></div>
-    </section>
-  </main>
-
-  <dialog id="issueDialog" aria-labelledby="issueTitle">
-    <form id="issueForm" novalidate>
-      <div class="dialog-head">
-        <div>
-          <h2 id="issueTitle"><span data-staff-only>Issue card</span><span data-customer-only>Request a card</span></h2>
-          <p>The card is linked to one account and starts as pending.</p>
+    <div class="page-container">
+      <div class="page-content">
+        <div class="sidebar sidebar-main">
+          <div class="sidebar-content">
+            <div class="sidebar-user">
+              <div class="category-content">
+                <div class="media">
+                  <a href="#" class="media-left">
+                    <img
+                      src="assets/images/placeholder.jpg"
+                      class="img-circle img-sm"
+                      alt=""
+                    />
+                  </a>
+                  <div class="media-body">
+                    <span
+                      class="media-heading text-semibold"
+                      id="userNameDisplay"
+                      >Mariam Anbar</span
+                    >
+                    <div class="text-size-mini text-muted">
+                      <i class="icon-switch2 text-size-small"></i>
+                      <a
+                        href="javascript:void(0)"
+                        onclick="logout()"
+                        class="text-muted"
+                        >Logout</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sidebar-category sidebar-category-visible">
+              <div class="category-content no-padding">
+                <ul class="navigation navigation-main navigation-accordion">
+                  <li class="navigation-header">
+                    <span>Main</span> <i class="icon-menu"></i>
+                  </li>
+                  <li>
+                    <a href="index.html"
+                      ><i class="icon-home4"></i>
+                      <span>Customer Directory</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="accounts.html"
+                      ><i class="icon-stack2"></i>
+                      <span>Accounts Directory</span></a
+                    >
+                  </li>
+                  <li class="active">
+                    <a href="cards.html"
+                      ><i class="icon-credit-card"></i>
+                      <span>Card Services</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="loans.html"
+                      ><i class="icon-cash3"></i> <span>Loan System</span></a
+                    >
+                  </li>
+                  <li class="navigation-header">
+                    <span>Monitoring</span> <i class="icon-menu"></i>
+                  </li>
+                  <li>
+                    <a href="logs.html"
+                      ><i class="icon-list-ordered"></i>
+                      <span>Transaction Logs</span></a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
         </div>
-        <button type="button" class="icon-btn" data-close aria-label="Close"><span data-icon="close"></span></button>
-      </div>
-      <div class="dialog-body">
-        <div class="form-error" role="alert" hidden></div>
-        <label class="field" data-staff-only><span>Account ID</span><input class="input num" id="issueAccountId" autocomplete="off"><small>Find it on the Accounts page.</small></label>
-        <label class="field" data-customer-only><span>Account</span><select class="select" id="issueAccountSelect"></select></label>
-        <label class="field"><span>Card network</span>
-          <select class="select" id="issueType"><option value="VISA">Visa</option><option value="MASTERCARD">Mastercard</option></select>
-        </label>
-        <label class="field"><span>PIN</span><input class="input num" type="password" id="issuePin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required><small>4 digits.</small></label>
-      </div>
-      <div class="dialog-foot">
-        <button type="button" class="btn btn-secondary" data-close>Cancel</button>
-        <button type="submit" class="btn btn-primary" id="issueSubmit"><span data-staff-only>Issue card</span><span data-customer-only>Request card</span></button>
-      </div>
-    </form>
-  </dialog>
+        <div class="content-wrapper">
+          <div class="content">
+            <div class="panel panel-flat">
+              <div class="panel-heading">
+                <h5 class="panel-title">Card Directory</h5>
+                <div class="heading-elements">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    onclick="openIssueCardModal()"
+                  >
+                    <i class="icon-plus3 position-left"></i> Issue New Card
+                  </button>
+                </div>
+              </div>
 
-  <dialog id="pinDialog" aria-labelledby="pinTitle">
-    <div class="dialog-head">
-      <div><h2 id="pinTitle">Card PIN</h2><p id="pinHint"></p></div>
-      <button type="button" class="icon-btn" data-close aria-label="Close"><span data-icon="close"></span></button>
+              <table
+                id="cardsDT"
+                class="table datatable-basic table-bordered table-striped"
+              >
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>Customer ID</th>
+                    <th>Account ID</th>
+                    <th>Card Number</th>
+                    <th>Type</th>
+                    <th>CVV</th>
+                    <th>Expiry</th>
+                    <th>Status</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div class="dialog-body"><div class="pin-display" id="pinValue"></div></div>
-    <div class="dialog-foot"><button type="button" class="btn btn-primary" data-close>Done</button></div>
-  </dialog>
-</body>
+
+    <div id="modal_issue_card" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-indigo">
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+            <h5 class="modal-title">Request New Bank Card</h5>
+          </div>
+          <form id="cardForm">
+            <div class="modal-body">
+              <div class="form-group">
+                <label>Account ID:</label>
+                <input
+                  type="text"
+                  id="card_acc_id"
+                  class="form-control"
+                  placeholder="Enter Account ID"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Card Type:</label>
+                <select id="card_type" class="form-control">
+                  <option value="VISA">VISA</option>
+                  <option value="MASTERCARD">MASTERCARD</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label>Set PIN:</label>
+                <input
+                  type="number"
+                  id="card_pin"
+                  class="form-control"
+                  placeholder="4 Digits"
+                  required
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-link" data-dismiss="modal">
+                Close
+              </button>
+              <button type="submit" class="btn bg-indigo">
+                Confirm Issuance
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <script src="js/pages/cards.js"></script>
+  </body>
 </html>

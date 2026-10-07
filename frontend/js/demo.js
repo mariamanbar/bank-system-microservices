@@ -3,8 +3,12 @@
  * without any of the Spring services.
  *
  * Turns on automatically on GitHub Pages, or locally by opening any page with ?demo
- * (for example login.html?demo). Turn it off with ?demo=off.
+ * (for example login.html?demo). Turn it off with ?demo=off or the "Exit demo" button.
  * Sample data lives in sessionStorage, so changes last until the tab is closed.
+ *
+ * It plugs into jQuery as an ajax "transport": every $.ajax call to API_BASE is answered
+ * here instead of going over the network, so the page scripts don't need any changes.
+ * Load it after jQuery and js/common.js.
  */
 'use strict';
 
@@ -118,7 +122,7 @@
       if (!b.password || (!isStaff && !db.customers.some(c => c.email.toLowerCase() === email))) return fail(401, 'Invalid credentials');
       return ok({ token: 'demo-token', role: isStaff ? 'ADMIN' : 'CUSTOMER', email });
     }
-    if (path === '/auth/register' && method === 'POST') {
+    if ((path === '/auth/register' || path === '/customer/register') && method === 'POST') {
       if (db.customers.some(c => c.email.toLowerCase() === String(b.email).toLowerCase())) return fail(400, 'Email is already taken!');
       const customer = { id: 'CU' + db.next.customer++, name: b.name, email: b.email, natId: b.natID, phone: b.phone, dob: b.dob, balance: 0 };
       db.customers.push(customer);
@@ -253,25 +257,84 @@
     return fail(404, `No demo route for ${method} ${path}`);
   }
 
-  window.DEMO = {
-    onPages,
-    // Same signature the API client uses; resolves to { status, data } after a short, realistic delay.
-    handle(method, path, query, body) {
-      return new Promise(resolve => {
-        setTimeout(() => {
-          const result = route(method, path, query || {}, body ? JSON.parse(JSON.stringify(body)) : null);
+  /* ---------- Hook into jQuery ---------- */
+
+  $.ajaxTransport('+*', function (options) {
+    if (!options.url || options.url.indexOf(API_BASE) !== 0) return undefined; // not an API call
+    let timer;
+    return {
+      send(headers, complete) {
+        const url = new URL(options.url);
+        const query = Object.fromEntries(url.searchParams);
+        let body = null;
+        if (typeof options.data === 'string' && options.data) {
+          if (String(options.contentType).includes('json')) {
+            try { body = JSON.parse(options.data); } catch { body = null; }
+          } else {
+            // Form-encoded data, e.g. $.ajax({ type: 'DELETE', data: { id } })
+            Object.assign(query, Object.fromEntries(new URLSearchParams(options.data)));
+          }
+        }
+        timer = setTimeout(() => {
+          const result = route(options.type.toUpperCase(), url.pathname, query, body);
           save();
-          resolve(JSON.parse(JSON.stringify(result)));
+          complete(result.status, result.status < 300 ? 'success' : 'error',
+            { text: JSON.stringify(result.data) }, 'Content-Type: application/json\r\n');
         }, 180 + Math.random() * 220);
+      },
+      abort() { clearTimeout(timer); },
+    };
+  });
+
+  /* ---------- Demo notices (styled with the template's own classes) ---------- */
+
+  const DEMO_STAFF = 'staff' + STAFF_DOMAIN;
+  const DEMO_CUSTOMER = 'lina@example.com';
+
+  function exitDemo() {
+    sessionStorage.removeItem('mbDemo');
+    sessionStorage.removeItem(STORE_KEY);
+    ['token', 'userEmail', 'userRole', 'userName'].forEach(k => localStorage.removeItem(k));
+    location.replace('login.html');
+  }
+
+  $(function () {
+    const loginForm = $('#loginForm');
+
+    if (loginForm.length) {
+      // Login page: one-click sign-in buttons.
+      const box = $(`
+        <div class="alert alert-info alert-styled-left content-group">
+          <span class="text-semibold">This is a demo with sample data.</span>
+          Pick a view to explore, or sign in with any sample email and any password.
+          <div class="row" style="margin-top:10px">
+            <div class="col-xs-6"><button type="button" class="btn btn-default btn-block" data-demo="${DEMO_STAFF}">Staff view</button></div>
+            <div class="col-xs-6"><button type="button" class="btn btn-default btn-block" data-demo="${DEMO_CUSTOMER}">Customer view</button></div>
+          </div>
+        </div>`);
+      loginForm.find('.text-center').first().after(box);
+      box.on('click', '[data-demo]', function () {
+        $('#email').val($(this).data('demo'));
+        $('#password').val('demo');
+        loginForm.trigger('submit');
       });
-    },
-    reset() {
-      sessionStorage.removeItem(STORE_KEY);
-    },
-    exit() {
-      sessionStorage.removeItem('mbDemo');
-      sessionStorage.removeItem(STORE_KEY);
-    },
-    accounts: { staff: 'staff' + STAFF_DOMAIN, customer: 'lina@example.com' },
-  };
+      return;
+    }
+
+    const content = $('.content').first();
+    if (content.length && !$('#registerForm').length) {
+      // Signed-in pages: a notice at the top with reset / exit.
+      const banner = $(`
+        <div class="alert alert-warning alert-styled-left">
+          <span class="text-semibold">Demo mode.</span> You're using sample data that runs in your browser. Changes last until you close this tab.
+          <span class="pull-right">
+            <a href="#" class="alert-link" data-demo-reset>Reset sample data</a>
+            ${onPages ? '' : '&nbsp;&nbsp;<a href="#" class="alert-link" data-demo-exit>Exit demo</a>'}
+          </span>
+        </div>`);
+      content.prepend(banner);
+      banner.on('click', '[data-demo-reset]', e => { e.preventDefault(); sessionStorage.removeItem(STORE_KEY); location.reload(); });
+      banner.on('click', '[data-demo-exit]', e => { e.preventDefault(); exitDemo(); });
+    }
+  });
 })();

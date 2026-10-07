@@ -15,14 +15,14 @@ Developed during my internship at **Arab Bank**, this project is a distributed b
 - **Data Persistence:** MongoDB Atlas for logs and H2/JPA for relational data.
 - **Fault Tolerance:** Resilience4j circuit breakers, retry of failed actions, scheduled jobs, and idempotency keys.
 - **Security:** JWT authentication with BCrypt password hashing.
-- **Frontend:** Dependency-free HTML, CSS and JavaScript with separate staff and customer views for customers, accounts, cards, loans and the activity log.
+- **Frontend:** HTML, jQuery and Bootstrap pages with separate staff and customer views for customers, accounts, cards, loans and transaction logs.
 
 ## 🛠️ Tech Stack
 
 - **Backend:** Java, Spring Boot, Spring Cloud (Gateway, Eureka)
 - **Messaging:** RabbitMQ
 - **Databases:** MongoDB, H2
-- **Frontend:** HTML, CSS, vanilla JavaScript (no frameworks or build step)
+- **Frontend:** HTML, CSS, JavaScript (jQuery, Bootstrap, DataTables), Limitless admin template
 - **Tools:** Git, Maven, Postman, Swagger
 
 ## 📂 Project Structure
@@ -54,20 +54,18 @@ Sign in with an email ending in `@bank.jo.com` to get the staff view; any other 
 
 ```
 frontend/
-├── *.html            one file per page (index.html is the customer directory / profile)
-├── css/styles.css    all styling
-├── fonts/            Public Sans (SIL Open Font License)
+├── *.html            one file per page (index.html is the customer directory)
+├── assets/           Limitless admin template: CSS, icons, images, jQuery, Bootstrap, DataTables, PNotify
 └── js/
-    ├── core.js       API client, session, sidebar, dialogs, toasts, formatting
-    ├── table.js      sortable, searchable, paginated tables
+    ├── common.js     gateway address (API_BASE), notifications, loading overlay
+    ├── session.js    attaches the JWT, redirects when signed out, customer menu, logout
+    ├── demo.js       demo mode (see below)
     └── pages/        one script per page
 ```
 
-The gateway address is set once at the top of `js/core.js` (`API_BASE`).
-
 ### Demo mode
 
-`js/demo.js` is a small in-browser stand-in for the backend with sample data, using the same API paths and responses as the real gateway. It turns on automatically on GitHub Pages; locally, open any page with `?demo` (for example `frontend/login.html?demo`, which also works by double-clicking the file). Use `?demo=off` or the **Exit demo** button to go back to the real backend. Changes to the sample data last until the browser tab is closed.
+`js/demo.js` is a small in-browser stand-in for the backend with sample data, using the same API paths and responses as the real gateway. It hooks into jQuery's ajax, so the page scripts are the same in both modes. It turns on automatically on GitHub Pages; locally, open any page with `?demo` (for example `frontend/login.html?demo`, which also works by double-clicking the file). Use `?demo=off` or the **Exit demo** button to go back to the real backend. Changes to the sample data last until the browser tab is closed.
 
 The live demo is published by `.github/workflows/pages.yml` whenever the `frontend` folder changes.
 

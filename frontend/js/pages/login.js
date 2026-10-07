@@ -1,55 +1,53 @@
-'use strict';
+$(document).ready(function () {
 
-(function () {
-  const { api, Session, withBusy } = App;
-  const $ = id => document.getElementById(id);
-  const params = new URLSearchParams(location.search);
-  const note = $('loginNote');
-  const error = $('loginError');
+    $('#loginForm').on('submit', function (e) {
+        e.preventDefault();
 
-  if (params.get('reason') === 'expired') {
-    note.textContent = 'Your session ended. Sign in again to continue.';
-    note.hidden = false;
-  }
-  if (params.get('registered')) {
-    note.textContent = 'Account created. Sign in with your new email and password.';
-    note.hidden = false;
-  }
-  if (params.get('email')) {
-    $('email').value = params.get('email');
-    $('password').focus();
-  }
+        const loginData = {
+            email: $('#email').val(),
+            password: $('#password').val()
+        };
 
-  if (window.DEMO) {
-    $('demoLogin').hidden = false;
-    const signInAs = email => {
-      $('email').value = email;
-      $('password').value = 'demo';
-      $('loginForm').requestSubmit();
-    };
-    $('demoStaff').addEventListener('click', () => signInAs(window.DEMO.accounts.staff));
-    $('demoCustomer').addEventListener('click', () => signInAs(window.DEMO.accounts.customer));
-  }
+        loaders.blockPage();
 
-  $('loginForm').addEventListener('submit', e => {
-    e.preventDefault();
-    const form = e.currentTarget;
-    error.hidden = true;
-    if (!form.reportValidity()) return;
-    const email = $('email').value.trim();
-    const password = $('password').value;
+        $.ajax({
+            // Points to Gateway (8084) -> Security Service (8087)
+            url: API_BASE + '/auth/login',
+            type: 'POST',
+            contentType: 'application/json',
+            data: JSON.stringify(loginData),
+            success: function (res) {
+                if (res.token) {
+                    // 1. Save the JWT token in the browser's storage
+                    localStorage.setItem('token', res.token);
+                    localStorage.setItem('userEmail', loginData.email);
+                    localStorage.setItem('userRole', res.role); // Save "ADMIN" or "CUSTOMER"
 
-    withBusy($('loginBtn'), async () => {
-      try {
-        const res = await api('/auth/login', { method: 'POST', body: { email, password } });
-        if (!res || !res.token) throw new Error("The server didn't return a session. Try again.");
-        Session.start(res, email);
-        location.href = 'index.html';
-      } catch (err) {
-        error.textContent = err.status === 0 || !err.status ? err.message : 'That email and password don\'t match. Check them and try again.';
-        error.hidden = false;
-        $('password').select();
-      }
+                    notifs.success("Login Successful", "Redirecting to dashboard...");
+                    
+                    localStorage.setItem('token', res.token);
+        localStorage.setItem('userEmail', loginData.email);
+        
+        // If your Login API returns the user's name, save it!
+        // If not, you can just use the email prefix for now
+        const nameFromEmail = loginData.email.split('@')[0]; 
+        localStorage.setItem('userName', nameFromEmail);
+
+                    // 2. Redirect to your main page after 0.5 second
+                    setTimeout(() => {
+                        window.location.href = 'index.html'; 
+                    }, 500);
+                } else {
+                    notifs.error("Login Failed", "No token received from server.");
+                }
+            },
+            error: function (xhr) {
+                const errorMsg = xhr.responseJSON ? xhr.responseJSON.message : "Invalid email or password";
+                notifs.error("Access Denied", errorMsg);
+            },
+            complete: function () {
+                loaders.unblockPage();
+            }
+        });
     });
-  });
-})();
+});

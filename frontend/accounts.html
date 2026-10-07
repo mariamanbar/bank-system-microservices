@@ -1,124 +1,314 @@
 <!doctype html>
 <html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Accounts | Mariam Bank</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312302a'/%3E%3Cpath d='M8 23V9.5l8 7.5 8-7.5V23' fill='none' stroke='%238fd0b8' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
-  <link rel="preload" href="fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="css/styles.css">
-  <script src="js/demo.js" defer></script>
-  <script src="js/core.js" defer></script>
-  <script src="js/table.js" defer></script>
-  <script src="js/pages/accounts.js" defer></script>
-</head>
-<body data-page="accounts">
-  <main class="main" id="main">
-    <div class="page-head">
-      <div>
-        <h1 data-mine="My accounts">Accounts</h1>
+  <head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Mariam Bank - Accounts</title>
+
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:400,300,100,500,700,900"
+      rel="stylesheet"
+      type="text/css"
+    />
+    <link
+      href="assets/css/icons/icomoon/styles.css"
+      rel="stylesheet"
+      type="text/css"
+    />
+
+    <link href="assets/css/bootstrap.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/core.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/components.css" rel="stylesheet" type="text/css" />
+    <link href="assets/css/colors.css" rel="stylesheet" type="text/css" />
+
+    <script
+      type="text/javascript"
+      src="assets/js/core/libraries/jquery.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/js/core/libraries/bootstrap.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/js/plugins/loaders/blockui.min.js"
+    ></script>
+
+    <script
+      type="text/javascript"
+      src="assets/js/plugins/tables/datatables/datatables.min.js"
+    ></script>
+    <script
+      type="text/javascript"
+      src="assets/js/plugins/notifications/pnotify.min.js"
+    ></script>
+    <script type="text/javascript" src="assets/js/core/app.js"></script>
+    <script type="text/javascript" src="js/common.js"></script>
+    <script type="text/javascript" src="js/demo.js"></script>
+    <script type="text/javascript" src="js/session.js"></script>
+  </head>
+
+  <body>
+    <div class="navbar navbar-inverse">
+      <div class="navbar-header">
+        <a class="navbar-brand" href="index.html"
+          ><img src="assets/images/logo_light.png" alt=""
+        /></a>
+        <ul class="nav navbar-nav visible-xs-block">
+          <li>
+            <a data-toggle="collapse" data-target="#navbar-mobile"
+              ><i class="icon-tree5"></i
+            ></a>
+          </li>
+          <li>
+            <a class="sidebar-mobile-main-toggle"
+              ><i class="icon-paragraph-justify3"></i
+            ></a>
+          </li>
+        </ul>
       </div>
-      <div class="page-actions" data-staff-only>
-        <button type="button" class="btn btn-primary" id="openAccountBtn"><span data-icon="plus"></span>Open account</button>
+
+      <div class="navbar-collapse collapse" id="navbar-mobile">
+        <ul class="nav navbar-nav">
+          <li>
+            <a class="sidebar-control sidebar-main-toggle hidden-xs"
+              ><i class="icon-paragraph-justify3"></i
+            ></a>
+          </li>
+        </ul>
+        <p class="navbar-text">
+          <span class="label bg-success-400">SYSTEM ONLINE</span>
+        </p>
       </div>
     </div>
 
-    <div class="statement" id="statement" hidden>
-      <div class="figure">
-        <span class="label" id="totalLabel">Total balance</span>
-        <span class="value" id="totalValue"></span>
-      </div>
-      <div class="figure small">
-        <span class="label">Accounts</span>
-        <span class="value" id="accountCountValue"></span>
+    <div class="page-container">
+      <div class="page-content">
+        <div class="sidebar sidebar-main">
+          <div class="sidebar-content">
+            <div class="sidebar-user">
+              <div class="category-content">
+                <div class="media">
+                  <a href="#" class="media-left">
+                    <img
+                      src="assets/images/placeholder.jpg"
+                      class="img-circle img-sm"
+                      alt=""
+                    />
+                  </a>
+                  <div class="media-body">
+                    <span
+                      class="media-heading text-semibold"
+                      id="userNameDisplay"
+                      >Mariam Anbar</span
+                    >
+                    <div class="text-size-mini text-muted">
+                      <i class="icon-switch2 text-size-small"></i>
+                      <a
+                        href="javascript:void(0)"
+                        onclick="logout()"
+                        class="text-muted"
+                        >Logout</a
+                      >
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="sidebar-category sidebar-category-visible">
+              <div class="category-content no-padding">
+                <ul class="navigation navigation-main navigation-accordion">
+                  <li class="navigation-header">
+                    <span>Main</span> <i class="icon-menu"></i>
+                  </li>
+                  <li>
+                    <a href="index.html"
+                      ><i class="icon-home4"></i>
+                      <span>Customer Directory</span></a
+                    >
+                  </li>
+                  <li class="active">
+                    <a href="accounts.html"
+                      ><i class="icon-stack2"></i>
+                      <span>Accounts Directory</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="cards.html"
+                      ><i class="icon-credit-card"></i>
+                      <span>Card Services</span></a
+                    >
+                  </li>
+                  <li>
+                    <a href="loans.html"
+                      ><i class="icon-cash3"></i> <span>Loan System</span></a
+                    >
+                  </li>
+                  <li class="navigation-header">
+                    <span>Monitoring</span> <i class="icon-menu"></i>
+                  </li>
+                  <li>
+                    <a href="logs.html"
+                      ><i class="icon-list-ordered"></i>
+                      <span>Transaction Logs</span></a
+                    >
+                  </li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="content-wrapper">
+          <div class="content">
+            <div class="panel panel-flat">
+              <div class="panel-heading">
+                <h5 class="panel-title">Accounts Directory</h5>
+                <div class="heading-elements">
+                  <button
+                    type="button"
+                    class="btn btn-primary btn-sm"
+                    onclick="openCreateAccountModal()"
+                  >
+                    <i class="icon-plus3 position-left"></i> Open New Account
+                  </button>
+                </div>
+              </div>
+
+              <table
+                id="accountsDT"
+                class="table datatable-basic table-bordered table-striped"
+              >
+                <thead>
+                  <tr>
+                    <th>Account ID</th>
+                    <th>Customer ID</th>
+                    <th>Type</th>
+                    <th>Balance</th>
+                    <th class="text-center">Actions</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
-    <section class="panel">
-      <div class="toolbar">
-        <label class="search">
-          <span class="visually-hidden">Search accounts</span>
-          <span data-icon="search"></span>
-          <input class="input" type="search" id="accountSearch" placeholder="Search by account or customer ID">
-        </label>
-        <label>
-          <span class="visually-hidden">Account type</span>
-          <select class="select" id="typeFilter">
-            <option value="">All types</option>
-            <option value="CURRENT">Current</option>
-            <option value="SAVINGS">Savings</option>
-            <option value="SALARY">Salary</option>
-            <option value="DEPOSIT">Deposit</option>
-            <option value="LOAN">Loan</option>
-          </select>
-        </label>
-        <span class="count" id="accountCount"></span>
+    <div id="modal_create_account" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+            <h5 class="modal-title">Create New Account</h5>
+          </div>
+          <form id="createAccountForm">
+            <div class="modal-body">
+              <div class="form-group">
+                <label>Customer ID:</label>
+                <input
+                  type="text"
+                  id="acc_cust_id"
+                  class="form-control"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>Account Type:</label>
+                <select id="acc_type" class="form-control">
+                  <option value="LOAN">Loan</option>
+                  <option value="DEPOSIT">Deposit</option>
+                  <option value="CURRENT">Current</option>
+                  <option value="SALARY">Salary</option>
+                  <option value="SAVINGS">Savings</option>
+                </select>
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">
+                Create Account
+              </button>
+            </div>
+          </form>
+        </div>
       </div>
-      <div class="table-wrap"><table class="ledger" id="accountsTable"><tbody></tbody></table></div>
-    </section>
-  </main>
+    </div>
 
-  <dialog id="openAccountDialog" aria-labelledby="openAccountTitle">
-    <form id="openAccountForm" novalidate>
-      <div class="dialog-head">
-        <div><h2 id="openAccountTitle">Open account</h2><p>The new account starts with a zero balance.</p></div>
-        <button type="button" class="icon-btn" data-close aria-label="Close"><span data-icon="close"></span></button>
+    <div id="modal_transaction" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+            <h5 class="modal-title" id="transTitle">Transaction</h5>
+          </div>
+          <form id="transForm">
+            <div class="modal-body">
+              <input type="hidden" id="trans_acc_id" />
+              <input type="hidden" id="trans_action_type" />
+              <div class="form-group">
+                <label>Amount:</label>
+                <input
+                  type="number"
+                  id="trans_amount"
+                  class="form-control"
+                  step="0.01"
+                  required
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn btn-primary">Confirm</button>
+            </div>
+          </form>
+        </div>
       </div>
-      <div class="dialog-body">
-        <div class="form-error" role="alert" hidden></div>
-        <label class="field"><span>Customer ID</span><input class="input num" id="newAccCustomer" autocomplete="off" required><small>Find it on the Customers page.</small></label>
-        <label class="field"><span>Account type</span>
-          <select class="select" id="newAccType">
-            <option value="CURRENT">Current</option>
-            <option value="SAVINGS">Savings</option>
-            <option value="SALARY">Salary</option>
-            <option value="DEPOSIT">Deposit</option>
-            <option value="LOAN">Loan</option>
-          </select>
-        </label>
-      </div>
-      <div class="dialog-foot">
-        <button type="button" class="btn btn-secondary" data-close>Cancel</button>
-        <button type="submit" class="btn btn-primary">Open account</button>
-      </div>
-    </form>
-  </dialog>
+    </div>
 
-  <dialog id="moneyDialog" aria-labelledby="moneyTitle">
-    <form id="moneyForm" novalidate>
-      <div class="dialog-head">
-        <div><h2 id="moneyTitle">Deposit</h2><p id="moneyHint"></p></div>
-        <button type="button" class="icon-btn" data-close aria-label="Close"><span data-icon="close"></span></button>
+    <div id="modal_card" class="modal fade">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header bg-indigo">
+            <button type="button" class="close" data-dismiss="modal">
+              &times;
+            </button>
+            <h5 class="modal-title">Issue Account Card</h5>
+          </div>
+          <form id="cardForm">
+            <div class="modal-body">
+              <input type="hidden" id="card_acc_id" />
+              <div class="form-group">
+                <label>Card Type:</label>
+                <input
+                  type="text"
+                  id="card_type"
+                  class="form-control"
+                  placeholder="e.g. VISA"
+                  required
+                />
+              </div>
+              <div class="form-group">
+                <label>PIN (digits):</label>
+                <input
+                  type="number"
+                  id="card_pin"
+                  class="form-control"
+                  required
+                />
+              </div>
+            </div>
+            <div class="modal-footer">
+              <button type="submit" class="btn bg-indigo">Issue Card</button>
+            </div>
+          </form>
+        </div>
       </div>
-      <div class="dialog-body">
-        <div class="form-error" role="alert" hidden></div>
-        <label class="field"><span>Amount ($)</span><input class="input num" type="number" id="moneyAmount" min="0.01" step="0.01" inputmode="decimal" required></label>
-      </div>
-      <div class="dialog-foot">
-        <button type="button" class="btn btn-secondary" data-close>Cancel</button>
-        <button type="submit" class="btn btn-primary" id="moneySubmit">Deposit</button>
-      </div>
-    </form>
-  </dialog>
+    </div>
 
-  <dialog id="cardDialog" aria-labelledby="cardTitle">
-    <form id="cardForm" novalidate>
-      <div class="dialog-head">
-        <div><h2 id="cardTitle">Request a card</h2><p id="cardHint"></p></div>
-        <button type="button" class="icon-btn" data-close aria-label="Close"><span data-icon="close"></span></button>
-      </div>
-      <div class="dialog-body">
-        <div class="form-error" role="alert" hidden></div>
-        <label class="field"><span>Card network</span>
-          <select class="select" id="cardType"><option value="VISA">Visa</option><option value="MASTERCARD">Mastercard</option></select>
-        </label>
-        <label class="field"><span>PIN</span><input class="input num" type="password" id="cardPin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" autocomplete="off" required><small>4 digits, used at ATMs and card machines.</small></label>
-      </div>
-      <div class="dialog-foot">
-        <button type="button" class="btn btn-secondary" data-close>Cancel</button>
-        <button type="submit" class="btn btn-primary" id="cardSubmit">Request card</button>
-      </div>
-    </form>
-  </dialog>
-</body>
+    <script src="js/pages/accounts.js"></script>
+  </body>
 </html>

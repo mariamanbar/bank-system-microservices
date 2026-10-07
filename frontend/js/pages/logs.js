@@ -1,64 +1,62 @@
-'use strict';
+const LOGS_API = API_BASE + "/logger";
 
-(function () {
-  if (!App.boot()) return;
-  const { api, listOf, getMyCustomer, Session, esc, fmt, withBusy } = App;
-  const mine = Session.isCustomer;
-  const $ = id => document.getElementById(id);
+$(document).ready(function () {
+    const table = $('#logsDT').DataTable({
+        autoWidth: false,
+        order: [[0, "desc"]], // Sort by timestamp descending
+        dom: '<"datatable-header"fPl><"datatable-scroll"t><"datatable-footer"ip>',
+        ajax: function (data, callback, settings) {
+            loaders.blockPage();
+            $.ajax({
+                url: LOGS_API,
+                type: 'GET',
+                success: (res) => {
+            let filteredData = res;
+            if (localStorage.getItem('userRole') === 'CUSTOMER') {
+                const myEmail = localStorage.getItem('userEmail');
+                // Filter the logs to only show this customer's actions
+                filteredData = res.filter(log => log.message.includes(myEmail) || log.customerId === localStorage.getItem('myId'));
+            }
+            callback({ data: filteredData });
+        },
+                
+                error: () => {
+                    notifs.error("Fetch Error", "Logs Service unreachable");
+                    loaders.unblockPage();
+                },
 
-  // Each service gets a consistent colour tag.
-  const tagClass = {};
-  const tagFor = name => {
-    if (!name) return App.EMPTY;
-    if (!(name in tagClass)) tagClass[name] = 't' + ((Object.keys(tagClass).length % 4) + 1);
-    return `<span class="tag ${tagClass[name]}">${esc(String(name).replace(/-/g, ' '))}</span>`;
-  };
+                complete: () => loaders.unblockPage()
+            });
+        },
+        columns: [
+            {
+                data: 'timestamp',
+                render: (val) => val ? val.replace('T', ' ').substring(0, 19) : 'N/A'
+            },
+            {
+                data: 'serviceName',
+                render: (val) => {
+                    let color = 'bg-slate';
+                    if (val === 'Loan-Service') color = 'bg-teal';
+                    if (val === 'Account-Service') color = 'bg-indigo';
+                    if (val === 'Customer-Service') color = 'bg-orange';
+                    return `<span class="label ${color}">${val}</span>`;
+                }
+            },
+            {
+                data: 'type',
+                render: (val) => `<b>${val}</b>`
+            },
+            { data: 'customerId', defaultContent: '<span class="text-muted">N/A</span>' },
+            { data: 'accountId', defaultContent: '<span class="text-muted">N/A</span>' },
+            {
+                data: 'message',
+                className: 'text-semibold text-grey-800'
+            }
+        ]
+    });
+});
 
-  const table = new DataTable($('logsTable'), {
-    pageSize: 25,
-    search: $('logSearch'),
-    countEl: $('logCount'),
-    countLabel: ['entry', 'entries'],
-    emptyTitle: 'No activity yet',
-    emptyText: 'Actions across the system will show up here.',
-    sort: { key: 'timestamp', dir: 'desc' },
-    columns: [
-      { key: 'timestamp', label: 'Time', searchable: false, render: r => `<span class="num">${fmt.dateTime(r.timestamp)}</span>` },
-      { key: 'serviceName', label: 'Service', render: r => tagFor(r.serviceName) },
-      { key: 'type', label: 'Event', render: r => r.type ? `<span class="cell-primary">${esc(fmt.label(r.type))}</span>` : App.EMPTY },
-      { key: 'customerId', label: 'Customer ID', render: r => fmt.id(r.customerId) },
-      { key: 'accountId', label: 'Account ID', render: r => fmt.id(r.accountId) },
-      { key: 'message', label: 'Message', sortable: false },
-    ],
-  });
-
-  const serviceFilter = $('serviceFilter');
-  serviceFilter.addEventListener('change', () => {
-    const s = serviceFilter.value;
-    table.setFilter(s ? r => r.serviceName === s : null);
-  });
-
-  async function load() {
-    table.setLoading();
-    try {
-      let logs = listOf(await api('/logger'));
-      if (mine) {
-        const me = await getMyCustomer().catch(() => null);
-        logs = logs.filter(l => (l.message || '').includes(Session.email) || (me && l.customerId === me.id));
-      }
-      // Rebuild the service filter from what's in the data.
-      const current = serviceFilter.value;
-      const services = [...new Set(logs.map(l => l.serviceName).filter(Boolean))].sort();
-      serviceFilter.innerHTML = '<option value="">All services</option>' +
-        services.map(s => `<option value="${esc(s)}"${s === current ? ' selected' : ''}>${esc(s.replace(/-/g, ' '))}</option>`).join('');
-      services.forEach(tagFor);
-      table.setData(logs);
-    } catch (err) {
-      table.setError(err.message, load);
-    }
-  }
-
-  $('refreshBtn').addEventListener('click', e => withBusy(e.currentTarget, load));
-
-  load();
-})();
+function refreshLogs() {
+    $('#logsDT').DataTable().ajax.reload();
+}
