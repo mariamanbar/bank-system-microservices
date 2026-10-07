@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Customers | Mariam Bank</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312302a'/%3E%3Cpath d='M8 23V9.5l8 7.5 8-7.5V23' fill='none' stroke='%238fd0b8' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/core.js" defer></script>
+  <script src="js/table.js" defer></script>
+  <script src="js/pages/customers.js" defer></script>
+</head>
+<body data-page="customers">
+  <main class="main" id="main">
+    <div class="page-head">
+      <div>
+        <h1 data-mine="My profile">Customers</h1>
+        <p data-staff-only>Everyone registered with the bank. Use a customer's ID to open accounts, issue cards or request loans for them.</p>
+      </div>
+      <div class="page-actions" data-staff-only>
+        <button type="button" class="btn btn-primary" id="addCustomerBtn"><span data-icon="plus"></span>Add customer</button>
+      </div>
+    </div>
+
+    <!-- Staff: customer directory -->
+    <section class="panel" data-staff-only>
+      <div class="toolbar">
+        <label class="search">
+          <span class="visually-hidden">Search customers</span>
+          <span data-icon="search"></span>
+          <input class="input" type="search" id="customerSearch" placeholder="Search by name, email, ID or phone">
+        </label>
+        <span class="count" id="customerCount"></span>
+      </div>
+      <div class="table-wrap"><table class="ledger" id="customersTable"><tbody></tbody></table></div>
+    </section>
+
+    <!-- Customer: own profile -->
+    <section id="profile" data-customer-only aria-live="polite"></section>
+  </main>
+
+  <dialog id="customerDialog" aria-labelledby="customerDialogTitle">
+    <form id="customerForm" novalidate>
+      <div class="dialog-head">
+        <div>
+          <h2 id="customerDialogTitle">Add customer</h2>
+          <p id="customerDialogHint">They can sign in with this email and password.</p>
+        </div>
+        <button type="button" class="icon-btn" data-close aria-label="Close"><span data-icon="close"></span></button>
+      </div>
+      <div class="dialog-body">
+        <div class="form-error" role="alert" hidden></div>
+        <input type="hidden" id="custId">
+        <div class="form-grid two">
+          <label class="field span-2"><span>Full name</span><input class="input" id="custName" autocomplete="off" required></label>
+          <label class="field span-2"><span>Email</span><input class="input" type="email" id="custEmail" autocomplete="off" required></label>
+          <label class="field span-2" id="custPasswordField"><span>Password</span><input class="input" type="password" id="custPassword" autocomplete="new-password" minlength="6"><small>At least 6 characters.</small></label>
+          <label class="field"><span>National ID</span><input class="input num" id="custNatId" inputmode="numeric" required></label>
+          <label class="field"><span>Phone</span><input class="input num" type="tel" id="custPhone" placeholder="079…" required></label>
+          <label class="field span-2"><span>Date of birth</span><input class="input" type="date" id="custDob" required></label>
+        </div>
+        <p class="field" id="custLockedNote" hidden><small>National ID, phone and date of birth can't be changed after registration.</small></p>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn btn-secondary" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="customerSubmit">Add customer</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

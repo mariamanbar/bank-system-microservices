@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Loans | Mariam Bank</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312302a'/%3E%3Cpath d='M8 23V9.5l8 7.5 8-7.5V23' fill='none' stroke='%238fd0b8' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/core.js" defer></script>
+  <script src="js/table.js" defer></script>
+  <script src="js/pages/loans.js" defer></script>
+</head>
+<body data-page="loans">
+  <main class="main" id="main">
+    <div class="page-head">
+      <div>
+        <h1 data-mine="My loans">Loans</h1>
+        <p data-staff-only>Look up a customer to see what they owe, take a payment or delay an installment.</p>
+      </div>
+      <div class="page-actions">
+        <button type="button" class="btn btn-primary" id="newLoanBtn"><span data-icon="plus"></span><span data-staff-only>New loan</span><span data-customer-only>Apply for a loan</span></button>
+      </div>
+    </div>
+
+    <form class="lookup" id="lookupForm" data-staff-only>
+      <label class="field"><span>Customer ID</span><input class="input num" id="lookupId" autocomplete="off" required></label>
+      <button type="submit" class="btn btn-secondary" id="lookupBtn">Show loans</button>
+    </form>
+
+    <div id="loanEmpty" class="empty-state" data-staff-only>
+      <strong>No customer selected</strong>
+      <p>Enter a customer ID above to see their loans.</p>
+    </div>
+
+    <div id="loanView" hidden>
+      <div class="statement">
+        <div class="figure debt">
+          <span class="label" id="owedLabel">Total owed</span>
+          <span class="value" id="owedValue"></span>
+        </div>
+        <div class="figure small">
+          <span class="label">Loans</span>
+          <span class="value" id="loanCountValue"></span>
+        </div>
+      </div>
+      <section class="panel">
+        <div class="table-wrap"><table class="ledger" id="loansTable"><tbody></tbody></table></div>
+      </section>
+    </div>
+  </main>
+
+  <dialog id="loanDialog" aria-labelledby="loanTitle">
+    <form id="loanForm" novalidate>
+      <div class="dialog-head">
+        <div><h2 id="loanTitle"><span data-staff-only>New loan</span><span data-customer-only>Apply for a loan</span></h2><p>The money is paid into the customer's account straight away.</p></div>
+        <button type="button" class="icon-btn" data-close aria-label="Close"><span data-icon="close"></span></button>
+      </div>
+      <div class="dialog-body">
+        <div class="form-error" role="alert" hidden></div>
+        <div class="form-grid two">
+          <label class="field span-2"><span>Customer ID</span><input class="input num" id="loanCustomer" autocomplete="off" required></label>
+          <label class="field"><span>Amount ($)</span><input class="input num" type="number" id="loanAmount" min="1" step="0.01" inputmode="decimal" required></label>
+          <label class="field"><span>Monthly installment ($)</span><input class="input num" type="number" id="loanInstallment" min="1" step="0.01" inputmode="decimal" required></label>
+          <label class="field span-2"><span>Loan type</span>
+            <select class="select" id="loanType">
+              <option value="INSTANT">Instant loan (2% interest)</option>
+              <option value="HOUSING">Housing loan (5% interest)</option>
+              <option value="CAR">Car loan (10% interest)</option>
+              <option value="COOL_GIRL">Cool Girl loan (20% interest)</option>
+            </select>
+          </label>
+        </div>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn btn-secondary" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="loanSubmit"><span data-staff-only>Issue loan</span><span data-customer-only>Apply</span></button>
+      </div>
+    </form>
+  </dialog>
+
+  <dialog id="payDialog" aria-labelledby="payTitle">
+    <form id="payForm" novalidate>
+      <div class="dialog-head">
+        <div><h2 id="payTitle">Pay installment</h2><p id="payHint"></p></div>
+        <button type="button" class="icon-btn" data-close aria-label="Close"><span data-icon="close"></span></button>
+      </div>
+      <div class="dialog-body">
+        <div class="form-error" role="alert" hidden></div>
+        <label class="field"><span>Amount ($)</span><input class="input num" type="number" id="payAmount" min="0.01" step="0.01" inputmode="decimal" required></label>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn btn-secondary" data-close>Cancel</button>
+        <button type="submit" class="btn btn-primary" id="paySubmit">Pay</button>
+      </div>
+    </form>
+  </dialog>
+</body>
+</html>

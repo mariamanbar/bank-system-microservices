@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Activity log | Mariam Bank</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%2312302a'/%3E%3Cpath d='M8 23V9.5l8 7.5 8-7.5V23' fill='none' stroke='%238fd0b8' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+  <link rel="preload" href="fonts/public-sans.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/core.js" defer></script>
+  <script src="js/table.js" defer></script>
+  <script src="js/pages/logs.js" defer></script>
+</head>
+<body data-page="logs">
+  <main class="main" id="main">
+    <div class="page-head">
+      <div>
+        <h1 data-mine="My activity">Activity log</h1>
+        <p data-staff-only>Every action recorded by the services, newest first.</p>
+      </div>
+      <div class="page-actions">
+        <button type="button" class="btn btn-secondary" id="refreshBtn"><span data-icon="refresh"></span>Refresh</button>
+      </div>
+    </div>
+
+    <section class="panel">
+      <div class="toolbar">
+        <label class="search">
+          <span class="visually-hidden">Search activity</span>
+          <span data-icon="search"></span>
+          <input class="input" type="search" id="logSearch" placeholder="Search messages, events or IDs">
+        </label>
+        <label>
+          <span class="visually-hidden">Service</span>
+          <select class="select" id="serviceFilter"><option value="">All services</option></select>
+        </label>
+        <span class="count" id="logCount"></span>
+      </div>
+      <div class="table-wrap"><table class="ledger" id="logsTable"><tbody></tbody></table></div>
+    </section>
+  </main>
+</body>
+</html>
